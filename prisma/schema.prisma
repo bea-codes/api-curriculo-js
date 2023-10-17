@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Usuario {
+  id Int @id @default(autoincrement())
+  nome String
+  email String
+  senha String
+  curriculos Curriculo[]
+  endereco Endereco?
+}
+
+model Endereco {
+  id Int @id @default(autoincrement())
+  usuario Usuario @relation(references: [id], fields: [idDoUsuario])
+  idDoUsuario Int @unique
+  CEP String
+  bairro String
+  logradouro String
+  numero Int
+  complemento String?
+}
+
+model Curriculo {
+  id Int @id @default(autoincrement())
+  usuario Usuario @relation(references: [id], fields: [idDoUsuario])
+  idDoUsuario Int
+  experiencias Experiencia[]
+  formacao Formacao[]
+  hardSkills HardSkill[]
+  sofSkills SoftSkil[]
+}
+
+model Experiencia {
+  id Int @id @default(autoincrement())
+  nome String
+  descricao String?
+  inicio DateTime
+  fim DateTime
+  empresa String
+  curriculos Curriculo[]
+}
+
+model Formacao {
+  id Int @id @default(autoincrement())
+  descricao String
+  inicio DateTime
+  fim DateTime
+  curriculos Curriculo[]
+}
+
+model HardSkill {
+  id Int @id @default(autoincrement())
+  nome String
+  descricao String?
+  curriculos Curriculo[]
+}
+
+model SoftSkil {
+  id Int @id @default(autoincrement())
+  nome String
+  descricao String?
+  curriculos Curriculo[]
+}
+
+model Lingua {
+  id Int @id @default(autoincrement())
+  nome String
+  fluencia String
+}
+
+model TestModel {
+  id Int @id @default(autoincrement())
+}
