@@ -10,7 +10,7 @@ Criar CRUD para essa entidade
 CREATE  -> DONE
 READ -> all, específico | DONE
 UPDATE
-DELETE
+DELETE -> DONE
 
 */
 
