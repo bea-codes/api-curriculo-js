@@ -1,5 +1,6 @@
-import { Router } from "express";
+import e, { Router } from "express";
 import prisma from "../prisma/prisma.js";
+import { Prisma } from "@prisma/client";
 
 const router = Router();
 
@@ -29,9 +30,16 @@ router.post("/", async (req, res) => {
     });
     res.json(user);
   } catch (error) {
-    res.status(500).json({
-      message: "Internal server error",
-    });
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code == "P2002") {
+        console.error("Um novo usuário não pode ser criado com este email");
+        console.error(error.message);
+        res.status(400).json({
+          message: "Não foi possível criar um novo usuário",
+          
+        });
+      }
+    }
   }
 });
 
@@ -53,8 +61,8 @@ router.get("/:userId", async (req, res) => {
   try {
     const user = await prisma.usuario.findUnique({
       where: {
-        id: Number(userId)
-      }
+        id: Number(userId),
+      },
     });
     res.json(user);
   } catch (error) {
