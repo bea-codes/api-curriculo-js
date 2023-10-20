@@ -47,23 +47,21 @@ router.get("/", async (req, res) => {
   }
 });
 
-
-
 // Por algum motivo preciso usar usuario.findFirst() aqui ao invés de findUnique... Pesquisar na documentação depois.
-router.get("/:userID", async (req, res) => {
-  const { paramId } = req.params;
+router.get("/:userId", async (req, res) => {
+  const { userId } = req.params;
   try {
-    const user = await prisma.usuario.findFirst({
+    const user = await prisma.usuario.findUnique({
       where: {
-        id: paramId,
-      },
+        id: Number(userId)
+      }
     });
     res.json(user);
   } catch (error) {
     console.log(error);
     res.status(404).json({
       message: "Resource not found",
-      error
+      error,
     });
   }
 });
