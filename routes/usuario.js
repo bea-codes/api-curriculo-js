@@ -1,4 +1,4 @@
-import e, { Router } from "express";
+import { Router } from "express";
 import prisma from "../prisma/prisma.js";
 import { Prisma } from "@prisma/client";
 
@@ -7,7 +7,7 @@ const router = Router();
 /* 
 Criar CRUD para essa entidade
 
-CREATE 
+CREATE  -> DONE
 READ -> all, específico | DONE
 UPDATE
 DELETE
@@ -36,7 +36,6 @@ router.post("/", async (req, res) => {
         console.error(error.message);
         res.status(400).json({
           message: "Não foi possível criar um novo usuário",
-          
         });
       }
     }
@@ -56,10 +55,11 @@ router.get("/", async (req, res) => {
 });
 
 // Por algum motivo preciso usar usuario.findFirst() aqui ao invés de findUnique... Pesquisar na documentação depois.
+//work on the findUniqueorThrow error handling
 router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
   try {
-    const user = await prisma.usuario.findUnique({
+    const user = await prisma.usuario.findUniqueOrThrow({
       where: {
         id: Number(userId),
       },
@@ -70,6 +70,22 @@ router.get("/:userId", async (req, res) => {
     res.status(404).json({
       message: "Resource not found",
       error,
+    });
+  }
+});
+
+router.delete("/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const deletdUser = await prisma.usuario.delete({
+      where: {
+        id: Number(userId),
+      },
+    });
+    res.json(deletdUser);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error on deletion",
     });
   }
 });
