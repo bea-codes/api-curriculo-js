@@ -16,8 +16,19 @@ model Usuario {
   nome String
   email String
   senha String
-  curriculos Curriculo[]
+  curriculo Curriculo?
   endereco Endereco?
+}
+
+model Curriculo {
+  id Int @id @default(autoincrement())
+  idDoUsuario Int @unique
+  usuario Usuario @relation(fields: [idDoUsuario], references: [id])
+  experiencias Experiencia[]
+  formacao Formacao[]
+  hardSkills HardSkill[]
+  sofSkills SoftSkil[]
+  linguas Lingua[]
 }
 
 model Endereco {
@@ -31,16 +42,6 @@ model Endereco {
   complemento String?
 }
 
-model Curriculo {
-  id Int @id @default(autoincrement())
-  usuario Usuario @relation(references: [id], fields: [idDoUsuario])
-  idDoUsuario Int
-  experiencias Experiencia[]
-  formacao Formacao[]
-  hardSkills HardSkill[]
-  sofSkills SoftSkil[]
-}
-
 model Experiencia {
   id Int @id @default(autoincrement())
   nome String
@@ -48,7 +49,8 @@ model Experiencia {
   inicio DateTime
   fim DateTime
   empresa String
-  curriculos Curriculo[]
+  curriculoId Int @unique
+  curriculo Curriculo @relation(fields: [curriculoId], references: [id])
 }
 
 model Formacao {
@@ -56,29 +58,30 @@ model Formacao {
   descricao String
   inicio DateTime
   fim DateTime
-  curriculos Curriculo[]
+  curriculoId Int @unique
+  curriculo Curriculo @relation(fields: [curriculoId], references: [id])
 }
 
 model HardSkill {
   id Int @id @default(autoincrement())
   nome String
   descricao String?
-  curriculos Curriculo[]
+  curriculoId Int @unique
+  curriculo Curriculo @relation(fields: [curriculoId], references: [id])
 }
 
 model SoftSkil {
   id Int @id @default(autoincrement())
   nome String
   descricao String?
-  curriculos Curriculo[]
+  curriculoId Int @unique
+  curriculo Curriculo @relation(fields: [curriculoId], references: [id])
 }
 
 model Lingua {
   id Int @id @default(autoincrement())
   nome String
   fluencia String
-}
-
-model TestModel {
-  id Int @id @default(autoincrement())
+  curriculoId Int @unique
+  curriculo Curriculo @relation(fields: [curriculoId], references: [id])
 }

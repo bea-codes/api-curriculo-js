@@ -1,0 +1,23 @@
+model User {
+	id Int @id @default(autoincrement())
+	name String
+	email String
+	profile Profile? // opcional	
+	posts Post[]
+}
+
+// User - Profile é uma relação 1:1
+model Profile {
+	id Int @id @default(autoincrement())
+
+	userId Int @unique
+	user User @relation(fields: [userId], references: [id])
+}
+
+// User - Post é uma relação 1:N
+model Post {
+	id Int @id @default(autoincrement())	
+
+	userId Int @unique
+	user User @relation(fields: [userId], references: [id])
+}

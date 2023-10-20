@@ -13,13 +13,27 @@ DELETE
 
 */
 
-router.post("/", async (req, res) => { 
+router.post("/", async (req, res) => {
   try {
-    const user = await prisma.usuario.create()
+    const { nome, email, senha, curriculo } = req.body;
+    const curriculoData = curriculo ? curriculo : {};
+    // console.log(`isThereCurriculo?: ${curriculoData}`);
+    // console.log(nome, email, senha, curriculo);
+    const user = await prisma.usuario.create({
+      data: {
+        nome,
+        email,
+        senha,
+        curriculo: curriculoData,
+      },
+    });
+    res.json(user);
   } catch (error) {
-    
+    res.status(500).json({
+      message: "Internal server error",
+    });
   }
- })
+});
 
 router.get("/", async (req, res) => {
   try {
@@ -32,14 +46,15 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:userID", async (req, res ) => {
+router.get("/:userID", async (req, res) => {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
     const user = prisma.usuario.findUnique({
       where: {
         id: Number(id),
       },
     });
+    res.json(user);
   } catch (error) {
     res.status(404).json({
       message: "Resource not found",
