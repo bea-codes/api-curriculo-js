@@ -1,6 +1,7 @@
 import { Router } from "express";
-import prisma from "../prisma/prisma.js";
+import prisma from "../../prisma/prisma.js";
 import { Prisma } from "@prisma/client";
+
 
 const router = Router();
 
@@ -8,9 +9,9 @@ const router = Router();
 Criar CRUD para essa entidade
 
 CREATE  -> DONE
-READ -> all, específico | DONE
-UPDATE
-DELETE -> DONE
+READ    -> all, específico | DONE
+UPDATE  -> 
+DELETE  -> DONE
 
 */
 
@@ -18,14 +19,14 @@ router.post("/", async (req, res) => {
   try {
     const { nome, email, senha, curriculo } = req.body;
     const curriculoData = curriculo ? curriculo : {};
-    // console.log(`isThereCurriculo?: ${curriculoData}`);
-    // console.log(nome, email, senha, curriculo);
     const user = await prisma.usuario.create({
       data: {
         nome,
         email,
         senha,
-        curriculo: curriculoData,
+        curriculo: {
+          create: curriculoData,
+        },
       },
     });
     res.json(user);
@@ -54,7 +55,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Por algum motivo preciso usar usuario.findFirst() aqui ao invés de findUnique... Pesquisar na documentação depois.
 //work on the findUniqueorThrow error handling
 router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
@@ -74,6 +74,31 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
+
+// UPDATE - working...
+router.put("/:userId/curriculo", async (req, res) => {
+  const { userId } = req.params;
+  const { curriculo } = req.body;
+
+  try {
+    const updatedUser = await prisma.curriculo.update({
+      where: { idDoUsuario: Number(userId) },
+      data: { 
+        curriculo
+       },
+    });
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error(error);
+     res.status(404).json({
+       message: "User not found or CV update failed",
+       error: error.message,
+     });
+  }
+});
+
+
+
 router.delete("/:userId", async (req, res) => {
   const { userId } = req.params;
   try {
@@ -86,6 +111,7 @@ router.delete("/:userId", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error on deletion",
+      error,
     });
   }
 });

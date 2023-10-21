@@ -3,9 +3,9 @@ import cors from "cors";
 import "dotenv/config";
 import bodyParser from "body-parser";
 
-import prisma from "./prisma/prisma.js";
-import routes from "./routes/index.js";
-import usuario from './routes/usuario.js'
+// import prisma from "../prisma/prisma.js";
+// import routes from "./routes/index.js";
+import usuario from "./routes/usuario.js";
 
 const app = express();
 const port = process.env.PORT || 8000;

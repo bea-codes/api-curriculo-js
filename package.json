@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "nodemon --exec babel-node server.js"
+    "start": "nodemon --exec babel-node src/server.js"
   },
   "name": "api-curriculo-js",
   "version": "1.0.0",

@@ -23,12 +23,9 @@ model Usuario {
 model Curriculo {
   id Int @id @default(autoincrement())
   idDoUsuario Int @unique
-  usuario Usuario @relation(fields: [idDoUsuario], references: [id])
+  usuario Usuario @relation(fields: [idDoUsuario], references: [id], onDelete: Cascade)
   experiencias Experiencia[]
   formacao Formacao[]
-  hardSkills HardSkill[]
-  sofSkills SoftSkil[]
-  linguas Lingua[]
 }
 
 model Endereco {
@@ -50,7 +47,7 @@ model Experiencia {
   fim DateTime
   empresa String
   curriculoId Int @unique
-  curriculo Curriculo @relation(fields: [curriculoId], references: [id])
+  curriculo Curriculo @relation(fields: [curriculoId], references: [id], onDelete: Cascade)
 }
 
 model Formacao {
@@ -59,29 +56,5 @@ model Formacao {
   inicio DateTime
   fim DateTime
   curriculoId Int @unique
-  curriculo Curriculo @relation(fields: [curriculoId], references: [id])
-}
-
-model HardSkill {
-  id Int @id @default(autoincrement())
-  nome String
-  descricao String?
-  curriculoId Int @unique
-  curriculo Curriculo @relation(fields: [curriculoId], references: [id])
-}
-
-model SoftSkil {
-  id Int @id @default(autoincrement())
-  nome String
-  descricao String?
-  curriculoId Int @unique
-  curriculo Curriculo @relation(fields: [curriculoId], references: [id])
-}
-
-model Lingua {
-  id Int @id @default(autoincrement())
-  nome String
-  fluencia String
-  curriculoId Int @unique
-  curriculo Curriculo @relation(fields: [curriculoId], references: [id])
+  curriculo Curriculo @relation(fields: [curriculoId], references: [id], onDelete: Cascade)
 }
