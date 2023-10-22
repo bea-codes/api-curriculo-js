@@ -2,7 +2,6 @@ import { Router } from "express";
 import prisma from "../../prisma/prisma.js";
 import { Prisma } from "@prisma/client";
 
-
 const router = Router();
 
 /* 
@@ -17,16 +16,12 @@ DELETE  -> DONE
 
 router.post("/", async (req, res) => {
   try {
-    const { nome, email, senha, curriculo } = req.body;
-    const curriculoData = curriculo ? curriculo : {};
+    const { nome, email, senha } = req.body;
     const user = await prisma.usuario.create({
       data: {
         nome,
         email,
         senha,
-        curriculo: {
-          create: curriculoData,
-        },
       },
     });
     res.json(user);
@@ -43,9 +38,33 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post("/:userId/cv", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { experiencias, formacao } = req.body;
+    const curriculo = await prisma.curriculo.create({
+      data: {
+        idDoUsuario: Number(userId),
+        experiencias,
+        formacao,
+      },
+    });
+
+    res.status(200).json(curriculo);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      message: "Não foi possível criar o CV",
+      error: error.message,
+    });
+  }
+});
+
 router.get("/", async (req, res) => {
   try {
-    const users = await prisma.usuario.findMany();
+    const users = await prisma.usuario.findMany({
+      include: { curriculo: true },
+    });
     console.log(users);
     res.json(users);
   } catch (error) {
@@ -74,30 +93,27 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-
 // UPDATE - working...
-router.put("/:userId/curriculo", async (req, res) => {
+router.put("/:userId/cv", async (req, res) => {
   const { userId } = req.params;
   const { curriculo } = req.body;
 
   try {
     const updatedUser = await prisma.curriculo.update({
       where: { idDoUsuario: Number(userId) },
-      data: { 
-        curriculo
-       },
+      data: {
+        curriculo,
+      },
     });
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error(error);
-     res.status(404).json({
-       message: "User not found or CV update failed",
-       error: error.message,
-     });
+    res.status(404).json({
+      message: "User not found or CV update failed",
+      error: error.message,
+    });
   }
 });
-
-
 
 router.delete("/:userId", async (req, res) => {
   const { userId } = req.params;
@@ -112,6 +128,22 @@ router.delete("/:userId", async (req, res) => {
     res.status(500).json({
       message: "Error on deletion",
       error,
+    });
+  }
+});
+
+router.delete("/:userId/cv", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const curriculo = await prisma.curriculo.delete({
+      where: { idDoUsuario: Number(userId) },
+    });
+    res.status(200).json(curriculo);
+  } catch (error) {
+    console.error(error);
+    res.status(404).json({
+      message: "Não foi possível excluir o curriculo",
+      error: error.message,
     });
   }
 });
